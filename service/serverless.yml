@@ -1,0 +1,133 @@
+service:
+  name: service
+# app and org for use with dashboard.serverless.com
+# app: car-pool
+#org: your-org-name
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+
+# Add the serverless-webpack plugin
+plugins:
+  - serverless-webpack
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'eu-west-2'}
+
+  apiGateway:
+    minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
+
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    CAR_TABLE: Car-${self:provider.stage}
+    CAR_TABLE_ARN: "arn:aws:dynamodb:eu-west-2:*:table/${self:provider.environment.CAR_TABLE}"
+    BOOKING_TABLE: Booking-${self:provider.stage}
+    BOOKING_TABLE_ARN: "arn:aws:dynamodb:eu-west-2:*:table/${self:provider.environment.BOOKING_TABLE}"
+    FILE_UPLOAD_S3_BUCKET: car-pool-file-upload-bucket-${self:provider.stage}
+    CAR_MAKE_INDEX_NAME: car-make-index
+    BOOKING_DATE_INDEX_NAME: booking-date-index
+
+functions:
+  hello:
+    handler: src/lambda/http/handler.hello
+    events:
+      - http:
+          method: get
+          path: hello
+
+  GetCars:
+    handler: src/lambda/http/getCars.handler
+    events:
+      - http:
+          method: get
+          path: cars
+
+
+resources:
+  Resources:
+    CarDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: carId
+            AttributeType: S
+          - AttributeName: make
+            AttributeType: S
+        KeySchema:
+          - AttributeName: carId
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.CAR_TABLE}
+        GlobalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.CAR_MAKE_INDEX_NAME}
+            KeySchema:
+              - AttributeName: carId
+                KeyType: HASH
+              - AttributeName: make
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL # What attributes will be copied to an index
+
+    BookingDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: bookingId
+            AttributeType: S
+          - AttributeName: carId
+            AttributeType: S
+          - AttributeName: bookDate
+            AttributeType: S
+        KeySchema:
+          - AttributeName: bookingId
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.BOOKING_TABLE}
+        GlobalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.BOOKING_DATE_INDEX_NAME}
+            KeySchema:
+              - AttributeName: carId
+                KeyType: HASH
+              - AttributeName: bookDate
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL # What attributes will be copied to an index
+
+
+    UploadBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.FILE_UPLOAD_S3_BUCKET}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedOrigins:
+                - "*"
+              AllowedHeaders:
+                - "*"
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              MaxAge: 3000
+
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        PolicyDocument:
+          Id: MyPolicy
+          Version: "2012-10-17"
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: "*"
+              Action: ["s3:GetObject", "s3:Put*"]
+              Resource: "arn:aws:s3:::${self:provider.environment.FILE_UPLOAD_S3_BUCKET}/*"
+        Bucket: { Ref: UploadBucket }
