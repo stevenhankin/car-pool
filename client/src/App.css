@@ -1,4 +1,4 @@
-.App {
+/* .App {
   text-align: center;
 }
 
@@ -27,12 +27,23 @@
 .App-link {
   color: #61dafb;
 }
+ */
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/*
+.card { 
+  border: 2px solid white; 
+  transition: border 0.4s;
+}
+.card:hover {
+  border: 2px solid red;
+} 
+*/
+
+.lead {
+  font-style: italic;
+}
+
+label {
+  padding-bottom: 48px;
+  font-weight: bolder;
 }
