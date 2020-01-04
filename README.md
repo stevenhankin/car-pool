@@ -9,6 +9,9 @@ It demonstrates
   * S3 Bucket (storage of images)
   * Cognito (authentication of users)
 * [Serverless Framework](https://serverless.com/)
+* WebApp integration
+
+Additionally, this application uses ReactJS, which I learnt a few years ago on [Udacity React Nanodegree](https://www.udacity.com/course/react-nanodegree--nd019) 
 
 ## Requirements
 
@@ -48,3 +51,29 @@ Please make sure to update tests as appropriate
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
+
+## Files
+- __car\-pool__
+   - [README.md](README.md)
+   - __client__
+     - [README.md](client/README.md)
+     - [node\_modules](client/node_modules)
+     - [package.json](client/package.json)
+     - __public__
+       - [favicon.ico](client/public/favicon.ico)
+       - [index.html](client/public/index.html)
+       - [logo192.png](client/public/logo192.png)
+       - [logo512.png](client/public/logo512.png)
+       - [manifest.json](client/public/manifest.json)
+       - [robots.txt](client/public/robots.txt)
+     - __src__
+       - [App.css](client/src/App.css)
+       - [App.js](client/src/App.js)
+       - [App.test.js](client/src/App.test.js)
+       - [index.css](client/src/index.css)
+       - [index.js](client/src/index.js)
+       - [logo.svg](client/src/logo.svg)
+       - [serviceWorker.js](client/src/serviceWorker.js)
+       - [setupTests.js](client/src/setupTests.js)
+     - [yarn.lock](client/yarn.lock)
+   - __serverless__
