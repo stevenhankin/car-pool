@@ -3,12 +3,12 @@
 This application is my capstone project for the [Udacity Cloud Developer Nanodegree](https://www.udacity.com/course/cloud-developer-nanodegree--nd9990)
 
 It demonstrates
-* AWS Cloud
-* Serverless Framework
-* AWS Lambdas
-* Authentication
-* AWS DynamoDB
-* Upload of file to S3 Bucket
+* AWS 
+  * Lambdas (serverless functions)
+  * DynamoDB (database)
+  * S3 Bucket (storage of images)
+  * Cognito (authentication of users)
+* [Serverless Framework](https://serverless.com/)
 
 ## Requirements
 
