@@ -9,7 +9,8 @@ It demonstrates
   * S3 Bucket (storage of images)
   * Cognito (authentication of users)
 * [Serverless Framework](https://serverless.com/)
-* WebApp integration
+* [AWS Amplify Client Framework](https://aws-amplify.github.io/docs/js/react)
+* WebApp Client (React) integration
 
 Additionally, this application uses ReactJS, which I learnt a few years ago on [Udacity React Nanodegree](https://www.udacity.com/course/react-nanodegree--nd019) 
 
