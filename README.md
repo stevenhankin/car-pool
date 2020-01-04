@@ -27,7 +27,7 @@ npm install
 
 ## Usage
 Firstly, the serverless application should be deployed to AWS
-Here I'm assuming that you have an AWS Profile of _serverless_ and are deploying to region _eu-west-2_
+Here I'm assuming that you have an AWS Profile of _serverless_ and are deploying to region _eu-west-2_. The NODE_OPTIONS setting is to help avoid memory problems in Node when packaging the lambdas as separate deployables.
 ```bash
 export NODE_OPTIONS=--max_old_space_size=4096
 
