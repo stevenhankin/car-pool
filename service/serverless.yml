@@ -1,8 +1,8 @@
 service:
   name: service
 # app and org for use with dashboard.serverless.com
-# app: car-pool
-#org: your-org-name
+app: car-pool
+org: stevenhankin
 
 custom:
   webpack:
@@ -34,12 +34,6 @@ provider:
     BOOKING_DATE_INDEX_NAME: booking-date-index
 
 functions:
-  hello:
-    handler: src/lambda/http/handler.hello
-    events:
-      - http:
-          method: get
-          path: hello
 
   GetCars:
     handler: src/lambda/http/getCars.handler
@@ -48,6 +42,14 @@ functions:
           method: get
           path: cars
 
+  GenerateUploadUrl:
+    handler: src/lambda/http/generateUploadUrl.handler
+    events:
+      - http:
+          method: post
+          # carId parameter will become available for event.pathParameters
+          path: cars/{carId}/attachment  
+          cors: true
 
 resources:
   Resources:

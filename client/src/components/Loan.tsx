@@ -1,7 +1,7 @@
-import React, { useState, SyntheticEvent, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, MouseEvent } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Col, FormText, Input, Label, Row, Button } from 'reactstrap';
-
+import { createCar } from '../api/car-pool-api';
 
 const Loan: React.FC<RouteComponentProps> = ({ history }) => {
 
@@ -20,6 +20,17 @@ const Loan: React.FC<RouteComponentProps> = ({ history }) => {
         }
     }
 
+    /**
+     * User has requested to upload details of car 
+     * to loan to marketplace
+     * @param e
+     */
+    const handleLoan = (e: MouseEvent<HTMLButtonElement>) => {
+        if (make && model) {
+            createCar("abc", { make, model });
+        }
+    }
+
     return (
 
         <Row>
@@ -31,7 +42,7 @@ const Loan: React.FC<RouteComponentProps> = ({ history }) => {
                         <Label for="make">Make</Label>
                     </Col>
                     <Col sm={10}>
-                        <Input type="text"  id="make" placeholder="e.g. Audi" value={make} onChange={(e) => setMake(e.target.value)} />
+                        <Input type="text" id="make" placeholder="e.g. Audi" value={make} onChange={(e) => setMake(e.target.value)} />
                     </Col>
                 </Row>
 
@@ -55,7 +66,7 @@ const Loan: React.FC<RouteComponentProps> = ({ history }) => {
                 </Row>
 
                 <Row>
-                    <Button color={"primary"} size={"lg"} disabled={!make || !model || !picture} >Loan it!</Button>
+                    <Button color={"primary"} size={"lg"} onClick={handleLoan} disabled={!make || !model || !picture} >Loan it!</Button>
                 </Row>
 
             </Col>

@@ -1,5 +1,6 @@
 import Amplify from 'aws-amplify';
 import React from 'react';
+import { withAuthenticator } from 'aws-amplify-react';
 import { RouteComponentProps, withRouter } from "react-router";
 import { Route, BrowserRouter, Switch } from 'react-router-dom';
 import { Col, Container, Jumbotron, Row } from 'reactstrap';
@@ -10,12 +11,46 @@ import RentOrHire from './components/LoanOrHire';
 import Loan from './components/Loan'
 import Hire from './components/Hire'
 import logo from './assets/logo.png'
+import NavBar from './components/NavBar'
+
+
+/**
+ * Authenticate React with Amazon Web Services using Auth0 
+ * See https://auth0.com/authenticate/react/amazon/
+ */
+import Auth from './auth/Auth'
+import { useAuth0 } from './react-auth0-spa';
 
 Amplify.configure(awsconfig);
 
-const App: React.FC<RouteComponentProps> = ({ history }) => {
+export interface AppProps {
+  auth: Auth
+  history: any
+}
+
+const App: React.FC<AppProps> = ({ history, auth }) => {
+
+  const { loading, user } = useAuth0();
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+
+
+
   return (
+    <>
+    <NavBar/>
     <Container >
+      <Row>
+        {user && (<> <img src={user.picture} alt="Profile" />
+          <h2>{user.name}</h2>
+          <p>{user.email}</p>
+          <code>{JSON.stringify(user, null, 2)}</code></>)
+        }
+
+      </Row>
       <Row>
         <Col>
           <Jumbotron>
@@ -36,6 +71,7 @@ const App: React.FC<RouteComponentProps> = ({ history }) => {
       </Switch>
 
     </Container>
+    </>
   );
 }
 
@@ -55,5 +91,6 @@ const signUpConfig = {
   ]
 };
 
-export default withRouter(App);
+export default App;
+// export default withRouter(App);
 // export default withAuthenticator(App, true, undefined,undefined,undefined,{ signUpConfig });
