@@ -4,6 +4,7 @@
  */
 import React, { useState, useEffect, useContext } from "react";
 import createAuth0Client from "@auth0/auth0-spa-js";
+import { LogIn } from "./components/LogIn";
 
 const DEFAULT_REDIRECT_CALLBACK = () =>
   window.history.replaceState({}, document.title, window.location.pathname);
@@ -17,9 +18,11 @@ export const Auth0Provider = ({
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState();
   const [user, setUser] = useState();
+  const [token, setToken] = useState();
   const [auth0Client, setAuth0] = useState();
   const [loading, setLoading] = useState(true);
   const [popupOpen, setPopupOpen] = useState(false);
+
 
   useEffect(() => {
     const initAuth0 = async () => {
@@ -33,11 +36,14 @@ export const Auth0Provider = ({
 
       const isAuthenticated = await auth0FromHook.isAuthenticated();
 
+
       setIsAuthenticated(isAuthenticated);
 
       if (isAuthenticated) {
         const user = await auth0FromHook.getUser();
         setUser(user);
+        const token = await auth0FromHook.getTokenSilently();
+        setToken(token)
       }
 
       setLoading(false);
@@ -73,6 +79,7 @@ export const Auth0Provider = ({
       value={{
         isAuthenticated,
         user,
+        token,
         loading,
         popupOpen,
         loginWithPopup,

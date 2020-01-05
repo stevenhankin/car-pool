@@ -2,6 +2,7 @@ import { apiEndpoint } from '../config'
 import { Car } from "../types/Car"
 import { CreateCarRequest } from "../types/CreateCarRequest"
 import Axios from 'axios'
+import jsonwebtoken from 'jsonwebtoken';
 
 /**
  * Call API to create a Car
@@ -9,13 +10,13 @@ import Axios from 'axios'
  * @param newCar 
  */
 export async function createCar(
-    idToken: string,
+    jwt: string,
     newCar: CreateCarRequest
 ): Promise<Car> {
     const response = await Axios.post(`${apiEndpoint}/cars`, JSON.stringify(newCar), {
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${idToken}`
+            'Authorization': `Bearer ${jwt}`
         }
     })
     return response.data.item

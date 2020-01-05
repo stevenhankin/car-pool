@@ -9,6 +9,7 @@
   "dependencies": {
     "aws-sdk": "^2.597.0",
     "jsonwebtoken": "^8.5.1",
+    "serverless-iam-roles-per-function": "^2.0.2",
     "source-map-support": "^0.5.10",
     "winston": "^3.2.1"
   },

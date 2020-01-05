@@ -17,6 +17,8 @@ const CAR_TABLE = process.env.CAR_TABLE
  */
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
 
+    logger.info('Received request to create a car');
+
     try {
         const { make, model } = JSON.parse(event.body)
         const userId = getUserIdFromJwt(event);
@@ -32,6 +34,8 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
             TableName: CAR_TABLE,
             Item: newCar
         };
+
+        logger.info(`will put into ${params.TableName}`);
 
         await docClient.put(params).promise();
 

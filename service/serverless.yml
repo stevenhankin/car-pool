@@ -1,8 +1,8 @@
 service:
-  name: service
+  name: car-pool-service
 # app and org for use with dashboard.serverless.com
-app: car-pool
-org: stevenhankin
+# app: car-pool
+# org: stevenhankin
 
 custom:
   webpack:
@@ -12,7 +12,8 @@ custom:
 # Add the serverless-webpack plugin
 plugins:
   - serverless-webpack
-
+  - serverless-iam-roles-per-function
+  
 provider:
   name: aws
   runtime: nodejs12.x
@@ -32,6 +33,7 @@ provider:
     FILE_UPLOAD_S3_BUCKET: car-pool-file-upload-bucket-${self:provider.stage}
     CAR_MAKE_INDEX_NAME: car-make-index
     BOOKING_DATE_INDEX_NAME: booking-date-index
+  
 
 functions:
 
@@ -41,6 +43,21 @@ functions:
       - http:
           method: get
           path: cars
+          cors: true
+
+    
+  CreateCar:
+    handler: src/lambda/http/createCar.handler
+    events:
+      - http:
+          method: post
+          path: cars
+          cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action: dynamodb:PutItem
+        Resource: "arn:aws:dynamodb:eu-west-2:550231250245:table/Car-dev"
+         #${self:provider.environment.CAR_TABLE_ARN}
 
   GenerateUploadUrl:
     handler: src/lambda/http/generateUploadUrl.handler

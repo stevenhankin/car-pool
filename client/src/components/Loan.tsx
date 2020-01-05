@@ -3,7 +3,16 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Col, FormText, Input, Label, Row, Button } from 'reactstrap';
 import { createCar } from '../api/car-pool-api';
 
-const Loan: React.FC<RouteComponentProps> = ({ history }) => {
+export interface Props {
+    jwt: string|undefined
+  }
+
+
+  /**
+   * {user} is the authenticated user's JWT
+   */
+const Loan: React.FC<Props> = ({ jwt }) => {
+
 
     const [make, setMake] = useState<string | undefined>("");
     const [model, setModel] = useState<string | undefined>("");
@@ -26,8 +35,8 @@ const Loan: React.FC<RouteComponentProps> = ({ history }) => {
      * @param e
      */
     const handleLoan = (e: MouseEvent<HTMLButtonElement>) => {
-        if (make && model) {
-            createCar("abc", { make, model });
+        if (jwt && make && model) {
+            createCar(jwt, { make, model });
         }
     }
 
@@ -79,4 +88,4 @@ const Loan: React.FC<RouteComponentProps> = ({ history }) => {
 }
 
 
-export default withRouter(Loan);
+export default Loan;

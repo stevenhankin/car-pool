@@ -1,5 +1,5 @@
 import Amplify from 'aws-amplify';
-import React from 'react';
+import React, { useState } from 'react';
 import { withAuthenticator } from 'aws-amplify-react';
 import { RouteComponentProps, withRouter } from "react-router";
 import { Route, BrowserRouter, Switch } from 'react-router-dom';
@@ -30,7 +30,13 @@ export interface AppProps {
 
 const App: React.FC<AppProps> = ({ history, auth }) => {
 
-  const { loading, user } = useAuth0();
+
+  const [jwt, setJwt] = useState<string | undefined>(undefined);
+
+
+  const { loading, user, token, getIdTokenClaims } = useAuth0();
+
+  console.log('!!!! token', token)
 
   if (loading) {
     return <div>Loading...</div>;
@@ -38,39 +44,51 @@ const App: React.FC<AppProps> = ({ history, auth }) => {
 
 
 
+  /**
+   * Get a JWT from Auth0 SDK
+   */
+  if (!loading) {
+    let claims =
+      getIdTokenClaims().then((claims: IdToken) => {
+        if (claims && claims.__raw) {
+          setJwt(claims.__raw)
+        }
+      })
+  }
+
 
   return (
     <>
-    <NavBar/>
-    <Container >
-      <Row>
-        {user && (<> <img src={user.picture} alt="Profile" />
-          <h2>{user.name}</h2>
-          <p>{user.email}</p>
-          <code>{JSON.stringify(user, null, 2)}</code></>)
-        }
+      <NavBar />
+      <Container >
+        <Row>
+          {user && (<> <img src={user.picture} alt="Profile" />
+            <h2>{user.name}</h2>
+            <p>{user.email}</p>
+            <code>{JSON.stringify(user, null, 2)}</code></>)
+          }
 
-      </Row>
-      <Row>
-        <Col>
-          <Jumbotron>
-            <Row>
-              <Col>
-                <h1 className="display-3">car pool</h1>
-                <h3 className="lead">The marketplace for hiring and loaning cars</h3>
-              </Col>
-            </Row>
-          </Jumbotron>
-        </Col>
-      </Row>
+        </Row>
+        <Row>
+          <Col>
+            <Jumbotron>
+              <Row>
+                <Col>
+                  <h1 className="display-3">car pool</h1>
+                  <h3 className="lead">The marketplace for hiring and loaning cars</h3>
+                </Col>
+              </Row>
+            </Jumbotron>
+          </Col>
+        </Row>
 
-      <Switch>
-        <Route path="/" exact render={() => <RentOrHire />} />
-        <Route path="/hire" render={() => <Hire />} />
-        <Route path="/loan" render={() => <Loan />} />
-      </Switch>
+        <Switch>
+          <Route path="/" exact render={() => <RentOrHire />} />
+          <Route path="/hire" render={() => <Hire />} />
+          <Route path="/loan" render={() => <Loan jwt={jwt} />} />
+        </Switch>
 
-    </Container>
+      </Container>
     </>
   );
 }
