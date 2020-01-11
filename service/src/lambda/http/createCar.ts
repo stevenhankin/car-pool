@@ -21,10 +21,10 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
 
     try {
         const { make, model } = JSON.parse(event.body)
-        const userId = getUserIdFromJwt(event);
+        const ownerId = getUserIdFromJwt(event);
         const newCar: Car = {
             carId: uuid(),
-            userId,
+            ownerId,
             createdAt: JSON.stringify(new Date()),
             make,
             model

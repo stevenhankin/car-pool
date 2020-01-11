@@ -47,3 +47,11 @@ label {
   padding-bottom: 48px;
   font-weight: bolder;
 }
+
+.loginDetails {
+ float: right;
+}
+
+.logoutButton  {
+  margin-left: 12px;
+}
