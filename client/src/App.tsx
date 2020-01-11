@@ -1,38 +1,35 @@
-import Amplify from "aws-amplify";
-import React, { useState } from "react";
-import { withAuthenticator } from "aws-amplify-react";
-import { RouteComponentProps, withRouter } from "react-router";
-import { Route, BrowserRouter, Switch } from "react-router-dom";
-import { Col, Container, Jumbotron, Row } from "reactstrap";
+import Amplify from 'aws-amplify';
+import React, { useState } from 'react';
+import { Route, Switch } from 'react-router-dom';
+import { Col, Container, Jumbotron, Row } from 'reactstrap';
 // import logo from './logo.svg';
-import "./App.css";
-import awsconfig from "./aws-exports";
-import RentOrHire from "./components/LoanOrHire";
-import Loan from "./components/Loan";
-import Hire from "./components/Hire";
-// import logo from './assets/logo.png';
-import NavBar from "./components/NavBar";
-
+import './App.css';
 /**
  * Authenticate React with Amazon Web Services using Auth0
  * See https://auth0.com/authenticate/react/amazon/
  */
-import Auth from "./auth/Auth";
-import { useAuth0 } from "./react-auth0-spa";
+import Auth from './auth/Auth';
+import awsconfig from './aws-exports';
+import Hire from './components/Hire';
+import Loan from './components/Loan';
+import RentOrHire from './components/LoanOrHire';
+// import logo from './assets/logo.png';
+import NavBar from './components/NavBar';
+import { useAuth0 } from './react-auth0-spa';
 
 Amplify.configure(awsconfig);
 
-export interface AppProps {
-  auth: Auth | undefined;
-  history: any;
-}
+type Props = {
+  auth?: Auth | undefined;
+  history?: any;
+};
 
-const App: React.FC<AppProps> = ({ history, auth }) => {
+const App: React.FC<Props> = ({ history, auth }) => {
   const [jwt, setJwt] = useState<string | undefined>(undefined);
 
   const { loading, user, token, getIdTokenClaims } = useAuth0();
 
-  console.log("!!!! token", token);
+  console.log('!!!! token', token);
 
   // if (loading) {
   //   return <div>Loading...</div>;
@@ -42,7 +39,7 @@ const App: React.FC<AppProps> = ({ history, auth }) => {
    * Get a JWT from Auth0 SDK
    */
   if (!loading) {
-    let claims = getIdTokenClaims().then((claims: IdToken) => {
+    const claims = getIdTokenClaims().then((claims: IdToken) => {
       if (claims && claims.__raw) {
         setJwt(claims.__raw);
       }
@@ -80,20 +77,21 @@ const App: React.FC<AppProps> = ({ history, auth }) => {
   );
 };
 
-const signUpConfig = {
-  header: "My Customized Sign Up",
-  hideAllDefaults: true,
-  defaultCountryCode: "44",
-  signUpFields: [
-    {
-      label: "My custom email label",
-      key: "email",
-      required: true,
-      displayOrder: 1,
-      type: "string"
-    }
-  ]
-};
+
+// const signUpConfig = {
+//   header: 'My Customized Sign Up',
+//   hideAllDefaults: true,
+//   defaultCountryCode: '44',
+//   signUpFields: [
+//     {
+//       label: 'My custom email label',
+//       key: 'email',
+//       required: true,
+//       displayOrder: 1,
+//       type: 'string'
+//     }
+//   ]
+// };
 
 export default App;
 // export default withRouter(App);

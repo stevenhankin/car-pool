@@ -1,11 +1,12 @@
 import React, { useState, ChangeEvent, useEffect } from 'react';
 // import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Col, Input, Label, Row, Button } from 'reactstrap';
-import { createCar } from '../api/car-pool-api';
+import { createCar, getUserCars } from '../api/car-pool-api';
 import { Spinner } from 'reactstrap';
 // import { LogIn } from './LogIn';
 import log from '../utils/Log';
 import PropTypes from 'prop-types';
+import { Car } from '../types/Car';
 
 export interface Props {
   jwt: string | undefined;
@@ -28,6 +29,24 @@ const Loan: React.FC<Props> = ({ jwt }) => {
   const [model, setModel] = useState<string | undefined>('');
   const [picture, setPicture] = useState<File | undefined>(undefined);
   const [loanStatus, setLoanStatus] = useState<LoanAction>(LoanAction.Disabled);
+  const [loanedCars, setLoanedCars] = useState<Car[]>([]);
+
+  const getCarsForUser = async (jwt: string): Promise<void> => {
+    log.info('Calling API to get loaned cars for user');
+    try {
+      const response = await getUserCars(jwt);
+      setLoanedCars(response.data);
+      log.info(`${JSON.stringify(response)}`);
+    } catch (e) {
+      log.error(JSON.stringify(e));
+    }
+  };
+
+  useEffect(() => {
+    if (jwt) {
+      getCarsForUser(jwt);
+    }
+  }, []);
 
   /**
    * User has selected a picture to upload
@@ -85,6 +104,11 @@ const Loan: React.FC<Props> = ({ jwt }) => {
       <Col>
         <Row>
           <Col>
+            <h3>Loan a car</h3>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
             <Label for="make">Make</Label>
           </Col>
           <Col sm={10}>
@@ -124,18 +148,31 @@ const Loan: React.FC<Props> = ({ jwt }) => {
                 </Row> */}
 
         <Row>
-          <Button
-            color={'primary'}
-            size={'lg'}
-            onClick={handleLoan}
-            disabled={!make || !model}
-          >
-            {loanStatus}{' '}
-            {loanStatus === LoanAction.Loaning && (
-              <Spinner style={{ height: '1.5rem', width: '1.5rem' }} />
-            )}
-          </Button>
+          <Col>
+            <Button
+              color={'primary'}
+              size={'lg'}
+              onClick={handleLoan}
+              disabled={!make || !model}
+            >
+              {loanStatus}{' '}
+              {loanStatus === LoanAction.Loaning && (
+                <Spinner style={{ height: '1.5rem', width: '1.5rem' }} />
+              )}
+            </Button>
+          </Col>
         </Row>
+
+        <Row>
+          <Col>
+            <h3>Your loaned cars</h3>
+          </Col>
+        </Row>
+        {loanedCars.map(car => (
+          <Row key={car.carId}>
+            <Col>{JSON.stringify(car)}</Col>
+          </Row>
+        ))}
       </Col>
 
       <Col sm={2}></Col>

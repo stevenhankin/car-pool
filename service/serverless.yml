@@ -1,8 +1,5 @@
 service:
   name: car-pool-service
-# app and org for use with dashboard.serverless.com
-# app: car-pool
-# org: stevenhankin
 
 custom:
   webpack:
@@ -13,11 +10,11 @@ custom:
 plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
-  
+
 provider:
   name: aws
   runtime: nodejs12.x
-  
+
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'eu-west-2'}
 
@@ -28,24 +25,39 @@ provider:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
     CAR_TABLE: Car-${self:provider.stage}
     CAR_TABLE_ARN: "arn:aws:dynamodb:eu-west-2:*:table/${self:provider.environment.CAR_TABLE}"
+    CAR_TABLE_INDEXES_ARN: "arn:aws:dynamodb:eu-west-2:*:table/${self:provider.environment.CAR_TABLE}/index/*"
     BOOKING_TABLE: Booking-${self:provider.stage}
     BOOKING_TABLE_ARN: "arn:aws:dynamodb:eu-west-2:*:table/${self:provider.environment.BOOKING_TABLE}"
     FILE_UPLOAD_S3_BUCKET: car-pool-file-upload-bucket-${self:provider.stage}
     CAR_MAKE_INDEX_NAME: car-make-index
+    CAR_OWNER_INDEX_NAME: car-owner-index
     BOOKING_DATE_INDEX_NAME: booking-date-index
-  
 
 functions:
 
-  GetCars:
-    handler: src/lambda/http/getCars.handler
+  GetUserCars:
+    handler: src/lambda/http/getUserCars.handler
     events:
       - http:
           method: get
-          path: cars
+          path: cars/loaned
           cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action: dynamodb:Scan
+        Resource: ${self:provider.environment.CAR_TABLE_ARN}
+      # - Effect: Allow
+      #   Action: dynamodb:Query
+      #   Resource: ${self:provider.environment.CAR_TABLE_INDEXES_ARN}
 
-    
+  # GetCars:
+  #   handler: src/lambda/http/getCars.handler
+  #   events:
+  #     - http:
+  #         method: get
+  #         path: cars
+  #         cors: true
+
   CreateCar:
     handler: src/lambda/http/createCar.handler
     events:
@@ -56,8 +68,8 @@ functions:
     iamRoleStatements:
       - Effect: Allow
         Action: dynamodb:PutItem
-        Resource: "arn:aws:dynamodb:eu-west-2:550231250245:table/Car-dev"
-         #${self:provider.environment.CAR_TABLE_ARN}
+        Resource:          ${self:provider.environment.CAR_TABLE_ARN}
+          # "arn:aws:dynamodb:eu-west-2:550231250245:table/Car-dev"
 
   GenerateUploadUrl:
     handler: src/lambda/http/generateUploadUrl.handler
@@ -65,7 +77,7 @@ functions:
       - http:
           method: post
           # carId parameter will become available for event.pathParameters
-          path: cars/{carId}/attachment  
+          path: cars/{carId}/attachment
           cors: true
 
 resources:
@@ -78,9 +90,13 @@ resources:
             AttributeType: S
           - AttributeName: make
             AttributeType: S
+          - AttributeName: ownerId
+            AttributeType: S
         KeySchema:
           - AttributeName: carId
             KeyType: HASH
+          - AttributeName: ownerId
+            KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.CAR_TABLE}
         GlobalSecondaryIndexes:
@@ -92,6 +108,14 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL # What attributes will be copied to an index
+          - IndexName: ${self:provider.environment.CAR_OWNER_INDEX_NAME}
+            KeySchema:
+              - AttributeName: carId
+                KeyType: HASH
+              - AttributeName: ownerId
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
 
     BookingDynamoDBTable:
       Type: AWS::DynamoDB::Table
@@ -117,7 +141,6 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL # What attributes will be copied to an index
-
 
     UploadBucket:
       Type: AWS::S3::Bucket

@@ -11,7 +11,7 @@ const docClient = new DynamoDB.DocumentClient();
 const CAR_TABLE = process.env.CAR_TABLE
 const CAR_MAKE_INDEX_NAME = process.env.INDEX_NAME
 
-export const hello: APIGatewayProxyHandler = async (_event, _context): Promise<APIGatewayProxyResult> => {
+export const handler: APIGatewayProxyHandler = async (_event, _context): Promise<APIGatewayProxyResult> => {
 
   // Filter for current user and use an INDEX for improved performance
   const params = {
