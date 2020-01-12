@@ -1,12 +1,14 @@
 import React, { useState, ChangeEvent, useEffect } from 'react';
 // import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { Col, Input, Label, Row, Button } from 'reactstrap';
+import { Col, Input, Label, Row, Button, Table } from 'reactstrap';
 import { createCar, getUserCars } from '../api/car-pool-api';
 import { Spinner } from 'reactstrap';
 // import { LogIn } from './LogIn';
 import log from '../utils/Log';
 import PropTypes from 'prop-types';
 import { Car } from '../types/Car';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 export interface Props {
   jwt: string | undefined;
@@ -85,6 +87,10 @@ const Loan: React.FC<Props> = ({ jwt }) => {
         );
       }
     }
+  };
+
+  const handleDelete = (carId: string): void => {
+    log.info(carId);
   };
 
   useEffect(() => {
@@ -168,11 +174,36 @@ const Loan: React.FC<Props> = ({ jwt }) => {
             <h3>Your loaned cars</h3>
           </Col>
         </Row>
-        {loanedCars.map(car => (
-          <Row key={car.carId}>
-            <Col>{JSON.stringify(car)}</Col>
-          </Row>
-        ))}
+
+        <Row>
+          <Table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Make</th>
+                <th>Model</th>
+                <th>Picture</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {loanedCars.map((car, idx) => (
+                <tr key={car.carId}>
+                  <td>{idx}</td>
+                  <td>{car.make}</td>
+                  <td>{car.model}</td>
+                  <td>{car.pictureUrl}</td>
+                  <td>
+                    <FontAwesomeIcon
+                      icon={faTrash}
+                      onClick={(): void => handleDelete(car.carId)}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Row>
       </Col>
 
       <Col sm={2}></Col>

@@ -77,7 +77,6 @@ const App: React.FC<Props> = ({ history, auth }) => {
   );
 };
 
-
 // const signUpConfig = {
 //   header: 'My Customized Sign Up',
 //   hideAllDefaults: true,
