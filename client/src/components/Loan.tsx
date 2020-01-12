@@ -1,14 +1,33 @@
-import React, { useState, ChangeEvent, useEffect } from 'react';
+import { faPencilAlt, faTrash, faUserInjured } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import PropTypes from "prop-types";
+import React, { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
+import {v4 as uuid} from 'uuid';
 // import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { Col, Input, Label, Row, Button, Table } from 'reactstrap';
-import { createCar, getUserCars, deleteCar } from '../api/car-pool-api';
-import { Spinner } from 'reactstrap';
+import {
+  Button,
+  Col,
+  Form,
+  Input,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Row,
+  Spinner,
+  Table
+} from "reactstrap";
+import {
+  createCar,
+  deleteCar,
+  getPhotoUploadUrl,
+  getUserCars,
+  putPhoto
+} from "../api/car-pool-api";
+import { Car } from "../types/Car";
 // import { LogIn } from './LogIn';
-import log from '../utils/Log';
-import PropTypes from 'prop-types';
-import { Car } from '../types/Car';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import log from "../utils/Log";
 
 export interface Props {
   jwt: string | undefined;
@@ -20,30 +39,47 @@ export interface Props {
 const Loan: React.FC<Props> = ({ jwt }) => {
   // State of the Loan button:  Disabled <-> Idle -> Loaning -> Success|Failed
   enum LoanAction {
-    Disabled = 'Enter fields above',
-    Idle = 'Loan it!',
-    Loaning = 'Loaning... ',
-    Failed = 'Failed 🆇',
-    Success = 'Completed'
+    Disabled = "Enter fields above",
+    Idle = "Loan it!",
+    Loaning = "Loaning... ",
+    Failed = "Failed 🆇",
+    Success = "Completed"
   }
 
-  const [make, setMake] = useState<string | undefined>('');
-  const [model, setModel] = useState<string | undefined>('');
+  const [carMake, setCarMake] = useState<string | undefined>("");
+  const [carModel, setCarModel] = useState<string | undefined>("");
   const [picture, setPicture] = useState<File | undefined>(undefined);
   const [loanStatus, setLoanStatus] = useState<LoanAction>(LoanAction.Disabled);
   const [loanedCars, setLoanedCars] = useState<Car[]>([]);
+  const [modal, setModal] = useState(false);
+  const [signedUrl, setSignedUrl] = useState<string | undefined>(undefined);
+  const [editCarId, setEditCarId] = useState<string | undefined>(undefined);
 
+  const toggle = (): void => setModal(!modal);
+
+  useEffect(() => {
+    log.debug(`picture changed ${JSON.stringify(picture)}`);
+  }, [picture]);
+
+  /**
+   * List of all cars for user
+   * @param jwt
+   */
   const getCarsForUser = async (jwt: string): Promise<void> => {
-    log.info('Calling API to get loaned cars for user');
+    log.info("Calling API to get loaned cars for user");
     try {
       const response = await getUserCars(jwt);
-      setLoanedCars(response.data);
+      const cars = response.data.map(car => ({...car, nonce: uuid()}))
+      setLoanedCars(cars);
       log.info(`${JSON.stringify(response)}`);
     } catch (e) {
       log.error(JSON.stringify(e));
     }
   };
 
+  /**
+   * Login will trigger getting list of cars
+   */
   useEffect(() => {
     if (jwt) {
       getCarsForUser(jwt);
@@ -54,13 +90,11 @@ const Loan: React.FC<Props> = ({ jwt }) => {
    * User has selected a picture to upload
    * @param e
    */
-  const handleFileSelect = (e: ChangeEvent<HTMLInputElement>): void => {
-    if (e.target.files) {
-      const picture = e.target.files[0];
-      log.debug(`selected file ${JSON.stringify(picture)}`);
-      setPicture(picture);
-    } else {
-      log.error('No file selected');
+  const handleFileSelect = (event: ChangeEvent<HTMLInputElement>): void => {
+    if (event.target.files && event.target.files.length) {
+      const file = event.target.files[0];
+      log.debug(`JJJ ${JSON.stringify(file.name)}`);
+      setPicture(file);
     }
   };
 
@@ -69,14 +103,31 @@ const Loan: React.FC<Props> = ({ jwt }) => {
    * to loan to marketplace
    * @param e
    */
-  const handleLoan = async (): Promise<void> => {
+  const loanCar = async (): Promise<void> => {
     if (loanStatus === LoanAction.Idle) {
-      if (jwt && make && model) {
+      if (jwt && carMake && carModel) {
         setLoanStatus(LoanAction.Loaning);
         try {
-          const car = await createCar(jwt, { make, model });
-          log.info(`created car for loaning ${JSON.stringify(car)}`);
-          setLoanStatus(LoanAction.Success);
+          const response = await createCar(jwt, {
+            make: carMake,
+            model: carModel
+          });
+          if (response.status < 299) {
+            const car = response.data;
+            log.info(`created car for loaning ${JSON.stringify(car)}`);
+            // const uploadUrl = response.data.uploadUrl;
+            // log.info(`upload URL is ${uploadUrl}`);
+            setLoanedCars([...loanedCars, car]);
+            // Temporarily set upload button to success
+            // then blank out the Make and Model
+            setLoanStatus(LoanAction.Success);
+            setTimeout(() => {
+              setCarMake("");
+              setCarModel("");
+            }, 1000);
+          } else {
+            setLoanStatus(LoanAction.Failed);
+          }
         } catch (e) {
           log.error(JSON.stringify(e));
           setLoanStatus(LoanAction.Failed);
@@ -85,6 +136,28 @@ const Loan: React.FC<Props> = ({ jwt }) => {
         log.info(
           "Can't loan car : Either jwt or make or model are not available"
         );
+      }
+    }
+  };
+
+  /**
+   * User has clicked icon to edit the photo
+   * @param carId
+   */
+  const handleEditPhoto = async (carId: string): Promise<void> => {
+    log.info(carId);
+    if (jwt) {
+      try {
+        const response = await getPhotoUploadUrl(jwt, carId);
+        log.info(JSON.stringify(response));
+        if (response.status < 299) {
+          log.info("success");
+          setSignedUrl(response.data.uploadUrl);
+          setEditCarId(carId);
+          setModal(true);
+        }
+      } catch (e) {
+        log.error("failed");
       }
     }
   };
@@ -99,24 +172,74 @@ const Loan: React.FC<Props> = ({ jwt }) => {
       try {
         const response = await deleteCar(jwt, carId);
         log.info(JSON.stringify(response));
+        if (response.status < 299) {
+          // Remove from displayed list
+          setLoanedCars(loanedCars.filter(c => c.carId !== carId));
+        }
       } catch (e) {
-        log.error('failed');
+        log.error("failed");
+      }
+    }
+  };
+
+  /**
+   *
+   */
+  const uploadPhoto = async (): Promise<void> => {
+    if (signedUrl && jwt && picture) {
+      log.info(`About to upload ${picture.name}`);
+      const response = await putPhoto(signedUrl, picture);
+      log.info(response);
+      if (response.status < 299) {
+        // On successful upload, close modal and refresh
+        setModal(false);
+        const cars = [...loanedCars];
+        cars.filter(car => car.carId == editCarId)[0].nonce = uuid();
+        setLoanedCars(cars)
+        getCarsForUser(jwt);
       }
     }
   };
 
   useEffect(() => {
     if (loanStatus === LoanAction.Idle || LoanAction.Disabled) {
-      if (make && model) {
+      if (carMake && carModel) {
         setLoanStatus(LoanAction.Idle);
       } else {
         setLoanStatus(LoanAction.Disabled);
       }
     }
-  }, [make, model]);
+  }, [carMake, carModel, LoanAction.Idle, LoanAction.Disabled, loanStatus]);
 
   return (
     <Row>
+      <Modal isOpen={modal} toggle={toggle}>
+        <ModalHeader toggle={toggle}>Upload Photo</ModalHeader>
+        <ModalBody>
+          <p>A good photo can help loan your car!</p>
+          <p>
+            <Input
+              type="file"
+              onChange={(e): void => handleFileSelect(e)}
+              accept="image/png, image/jpeg"
+              id="upload-file"
+            />
+          </p>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            color="primary"
+            onClick={uploadPhoto}
+            disabled={!picture?.name}
+          >
+            Upload Photo
+          </Button>{" "}
+          <Button color="secondary" onClick={toggle}>
+            Cancel
+          </Button>
+        </ModalFooter>
+      </Modal>
+
       <Col sm={2}></Col>
 
       <Col>
@@ -134,8 +257,8 @@ const Loan: React.FC<Props> = ({ jwt }) => {
               type="text"
               id="make"
               placeholder="e.g. Audi"
-              value={make}
-              onChange={(e): void => setMake(e.target.value)}
+              value={carMake}
+              onChange={(e): void => setCarMake(e.target.value)}
             />
           </Col>
         </Row>
@@ -149,73 +272,90 @@ const Loan: React.FC<Props> = ({ jwt }) => {
               type="text"
               id="model"
               placeholder="e.g. TT"
-              value={model}
-              onChange={(e): void => setModel(e.target.value)}
+              value={carModel}
+              onChange={(e): void => setCarModel(e.target.value)}
             />
           </Col>
         </Row>
 
-        {/* <Row>
-                    <Col>
-                        <Label for="picture" >Picture</Label>
-                    </Col>
-                    <Col sm={10}>
-                        <Input type="file" id="picture" onChange={handleFileSelect} />
-                        <FormText color="muted">A picture is worth a thousand words...show people how great your car is!</FormText>
-                    </Col>
-                </Row> */}
-
         <Row>
           <Col>
             <Button
-              color={'primary'}
-              size={'lg'}
-              onClick={handleLoan}
-              disabled={!make || !model}
+              color={"primary"}
+              size={"lg"}
+              onClick={loanCar}
+              disabled={!carMake || !carModel}
             >
-              {loanStatus}{' '}
+              {loanStatus}{" "}
               {loanStatus === LoanAction.Loaning && (
-                <Spinner style={{ height: '1.5rem', width: '1.5rem' }} />
+                <Spinner style={{ height: "1.5rem", width: "1.5rem" }} />
               )}
             </Button>
           </Col>
         </Row>
 
-        <Row>
-          <Col>
-            <h3>Your loaned cars</h3>
-          </Col>
-        </Row>
+        {loanedCars && loanedCars.length > 0 && (
+          <>
+            <Row>
+              <Col>
+                <hr />
+              </Col>
+            </Row>
 
-        <Row>
-          <Table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Make</th>
-                <th>Model</th>
-                <th>Picture</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {loanedCars.map((car, idx) => (
-                <tr key={car.carId}>
-                  <td>{idx}</td>
-                  <td>{car.make}</td>
-                  <td>{car.model}</td>
-                  <td>{car.pictureUrl}</td>
-                  <td>
-                    <FontAwesomeIcon
-                      icon={faTrash}
-                      onClick={(): Promise<void> => handleDelete(car.carId)}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </Row>
+            <Row>
+              <Col>
+                <h3>Your loaned cars</h3>
+              </Col>
+            </Row>
+
+            <Row>
+              <Table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Make</th>
+                    <th>Model</th>
+                    <th>Date</th>
+                    <th>Picture</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loanedCars.map((car, idx) => (
+                    <tr key={car.carId}>
+                      <td>{idx}</td>
+                      <td>{car.make}</td>
+                      <td>{car.model}</td>
+                      <td>
+                        {new Date(car.createdAt).toLocaleDateString()}{" "}
+                        {new Date(car.createdAt).toLocaleTimeString()}
+                      </td>
+                      <td>
+                        <img src={`${car.pictureUrl}?nonce=${car.nonce}`} width={150} alt="" />
+                        <FontAwesomeIcon
+                          icon={faPencilAlt}
+                          size="lg"
+                          className="editIcon"
+                          color="blue"
+                          onClick={(): Promise<void> =>
+                            handleEditPhoto(car.carId)
+                          }
+                        />
+                      </td>
+                      <td>
+                        <FontAwesomeIcon
+                          icon={faTrash}
+                          size="lg"
+                          onClick={(): Promise<void> => handleDelete(car.carId)}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </Row>
+          </>
+        )}
       </Col>
 
       <Col sm={2}></Col>

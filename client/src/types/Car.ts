@@ -3,5 +3,7 @@ export interface Car {
   ownerId: string;
   make: string;
   model: string;
+  createdAt: string;
   pictureUrl?: string;
+  nonce?: string;
 }

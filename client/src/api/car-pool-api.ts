@@ -1,7 +1,8 @@
-import { apiEndpoint } from '../config';
-import { Car } from '../types/Car';
-import { CreateCarRequest } from '../types/CreateCarRequest';
-import Axios, { AxiosResponse } from 'axios';
+import { apiEndpoint } from "../config";
+import { Car } from "../types/Car";
+import { CreateCarRequest } from "../types/CreateCarRequest";
+import Axios, { AxiosResponse } from "axios";
+import { UploadUrl } from "../types/UploadUrl";
 
 /**
  * Call API to create a Car
@@ -14,7 +15,7 @@ export async function createCar(
 ): Promise<AxiosResponse<Car>> {
   return await Axios.post(`${apiEndpoint}/cars`, JSON.stringify(newCar), {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${jwt}`
     }
   });
@@ -33,12 +34,50 @@ export async function getUserCars(
 ): Promise<AxiosResponse<Car[]>> {
   return await Axios.get(`${apiEndpoint}/cars/loaned`, {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${jwt}`
     }
   });
   // console.log('received car',response.data.item)
   // return response.data.item
+}
+
+/**
+ * Call API to get a signed url for updating car photo
+ * @param jwt
+ * @param carId
+ */
+export async function getPhotoUploadUrl(
+  jwt: string,
+  carId: string
+  // newCar: CreateCarRequest
+): Promise<AxiosResponse<UploadUrl>> {
+  return await Axios.get(`${apiEndpoint}/cars/loaned/${carId}/uploadUrl`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`
+    }
+  });
+} //: JSON.stringify({ uploadUrl: signedUrl })
+
+/**
+ *
+ * @param jwt Use a signed url to update a photo for a car
+ * @param carId
+ */
+export async function putPhoto(
+  uploadUrl: string,
+  file: File
+): Promise<AxiosResponse> {
+  return await Axios.put(
+    uploadUrl,
+    file
+    // , {
+    // headers: {
+    //   "Content-Type": "application/json",
+    //   Authorization: `Bearer ${jwt}`
+    // }}
+  );
 }
 
 /**
@@ -53,12 +92,10 @@ export async function deleteCar(
 ): Promise<AxiosResponse<Car[]>> {
   return await Axios.delete(`${apiEndpoint}/cars/loaned/${carId}`, {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${jwt}`
     }
   });
-  // console.log('received car',response.data.item)
-  // return response.data.item
 }
 
 /**

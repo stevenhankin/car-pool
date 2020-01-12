@@ -28,12 +28,32 @@ provider:
     CAR_TABLE_INDEXES_ARN: "arn:aws:dynamodb:eu-west-2:*:table/${self:provider.environment.CAR_TABLE}/index/*"
     BOOKING_TABLE: Booking-${self:provider.stage}
     BOOKING_TABLE_ARN: "arn:aws:dynamodb:eu-west-2:*:table/${self:provider.environment.BOOKING_TABLE}"
-    FILE_UPLOAD_S3_BUCKET: car-pool-file-upload-bucket-${self:provider.stage}
-    CAR_MAKE_INDEX_NAME: car-make-index
-    CAR_OWNER_INDEX_NAME: car-owner-index
+    CAR_PICTURE_S3_BUCKET: car-pool-picture-upload-bucket-${self:provider.stage}
+    SIGNED_URL_EXPIRATION: 300
+    # CAR_MAKE_INDEX_NAME: car-make-index
+    # CAR_OWNER_INDEX_NAME: car-owner-index
     BOOKING_DATE_INDEX_NAME: booking-date-index
 
 functions:
+  GetPhotoUploadUrl:
+    handler: src/lambda/http/getPhotoUploadUrl.handler
+    events:
+      - http:
+          method: get
+          path: cars/loaned/{carId}/uploadUrl
+          cors: true
+
+  DeleteCar:
+    handler: src/lambda/http/deleteCar.handler
+    events:
+      - http:
+          method: delete
+          path: cars/loaned/{carId}
+          cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action: dynamodb:DeleteItem
+        Resource: ${self:provider.environment.CAR_TABLE_ARN}
 
   GetUserCars:
     handler: src/lambda/http/getUserCars.handler
@@ -51,25 +71,6 @@ functions:
       #   Action: dynamodb:Query
       #   Resource: ${self:provider.environment.CAR_TABLE_INDEXES_ARN}
 
-  DeleteCar:
-    handler: src/lambda/http/deleteCar.handler
-    events:
-      - http:
-          method: delete
-          path: cars/loaned/{carId}
-          cors: true
-    iamRoleStatements:
-      - Effect: Allow
-        Action: dynamodb:DeleteItem
-        Resource: ${self:provider.environment.CAR_TABLE_ARN}
-  # GetCars:
-  #   handler: src/lambda/http/getCars.handler
-  #   events:
-  #     - http:
-  #         method: get
-  #         path: cars
-  #         cors: true
-
   CreateCar:
     handler: src/lambda/http/createCar.handler
     events:
@@ -80,17 +81,9 @@ functions:
     iamRoleStatements:
       - Effect: Allow
         Action: dynamodb:PutItem
-        Resource:          ${self:provider.environment.CAR_TABLE_ARN}
+        Resource:
+          ${self:provider.environment.CAR_TABLE_ARN}
           # "arn:aws:dynamodb:eu-west-2:550231250245:table/Car-dev"
-
-  GenerateUploadUrl:
-    handler: src/lambda/http/generateUploadUrl.handler
-    events:
-      - http:
-          method: post
-          # carId parameter will become available for event.pathParameters
-          path: cars/{carId}/attachment
-          cors: true
 
 resources:
   Resources:
@@ -100,34 +93,34 @@ resources:
         AttributeDefinitions:
           - AttributeName: carId
             AttributeType: S
-          - AttributeName: make
-            AttributeType: S
-          - AttributeName: ownerId
-            AttributeType: S
+          # - AttributeName: make
+          #   AttributeType: S
+          # - AttributeName: ownerId
+          #   AttributeType: S
         KeySchema:
           - AttributeName: carId
             KeyType: HASH
-          - AttributeName: ownerId
-            KeyType: RANGE
+          # - AttributeName: ownerId
+          #   KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.CAR_TABLE}
-        GlobalSecondaryIndexes:
-          - IndexName: ${self:provider.environment.CAR_MAKE_INDEX_NAME}
-            KeySchema:
-              - AttributeName: carId
-                KeyType: HASH
-              - AttributeName: make
-                KeyType: RANGE
-            Projection:
-              ProjectionType: ALL # What attributes will be copied to an index
-          - IndexName: ${self:provider.environment.CAR_OWNER_INDEX_NAME}
-            KeySchema:
-              - AttributeName: carId
-                KeyType: HASH
-              - AttributeName: ownerId
-                KeyType: RANGE
-            Projection:
-              ProjectionType: ALL
+        # GlobalSecondaryIndexes:
+        #   - IndexName: ${self:provider.environment.CAR_MAKE_INDEX_NAME}
+        #     KeySchema:
+        #       - AttributeName: carId
+        #         KeyType: HASH
+        #       - AttributeName: make
+        #         KeyType: RANGE
+        #     Projection:
+        #       ProjectionType: ALL # What attributes will be copied to an index
+        #   - IndexName: ${self:provider.environment.CAR_OWNER_INDEX_NAME}
+        #     KeySchema:
+        #       - AttributeName: carId
+        #         KeyType: HASH
+        #       - AttributeName: ownerId
+        #         KeyType: RANGE
+        #     Projection:
+        #       ProjectionType: ALL
 
     BookingDynamoDBTable:
       Type: AWS::DynamoDB::Table
@@ -157,7 +150,7 @@ resources:
     UploadBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: ${self:provider.environment.FILE_UPLOAD_S3_BUCKET}
+        BucketName: ${self:provider.environment.CAR_PICTURE_S3_BUCKET}
         CorsConfiguration:
           CorsRules:
             - AllowedOrigins:
@@ -183,5 +176,5 @@ resources:
               Effect: Allow
               Principal: "*"
               Action: ["s3:GetObject", "s3:Put*"]
-              Resource: "arn:aws:s3:::${self:provider.environment.FILE_UPLOAD_S3_BUCKET}/*"
+              Resource: "arn:aws:s3:::${self:provider.environment.CAR_PICTURE_S3_BUCKET}/*"
         Bucket: { Ref: UploadBucket }
