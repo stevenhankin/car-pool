@@ -1,8 +1,9 @@
 import { APIGatewayProxyHandler, APIGatewayProxyResult } from "aws-lambda";
 import { DynamoDB } from "aws-sdk";
 import "source-map-support/register";
-import { getUserIdFromJwt } from "../../auth/utils";
+// import { getUserIdFromJwt } from "../../auth/utils";
 import { createLogger } from "../../utils/logger";
+import { getUserIdFromJwt } from "../../auth/utils";
 
 const logger = createLogger("http");
 const docClient = new DynamoDB.DocumentClient();
@@ -17,7 +18,8 @@ const CAR_TABLE = process.env.CAR_TABLE;
 export const handler: APIGatewayProxyHandler = async (
   event
 ): Promise<APIGatewayProxyResult> => {
-  logger.info("Received request to get all cars for user");
+  const carId = event.pathParameters.carId
+  logger.info(`Received request to delete car ${carId}`);
 
   try {
     logger.info('Getting user id from JWT')
@@ -27,32 +29,35 @@ export const handler: APIGatewayProxyHandler = async (
     const params = {
       TableName: CAR_TABLE,
       // IndexName: CAR_OWNER_INDEX_NAME,
-      FilterExpression: "ownerId=:u",
-      ExpressionAttributeValues: { ":u": ownerId }
+      Key: {
+        HashKey: carId,
+        RangeKey: ownerId // prevents user from deleting someone else's car
+      }
     };
 
-    logger.info(`Querying cars for user ${ownerId}`)
-    const result = await docClient.scan(params).promise();
+    logger.info(`Deleting car ${carId} for owner ${ownerId}`)
+    const response = await docClient.delete(params).promise();
+    logger.info('completed',{response})
 
     return {
-      statusCode: 200,
+      statusCode: 204,
       headers: {
         'Access-Control-Allow-Credentials': true,
         "Access-Control-Allow-Origin": "*"
       },
-      body: JSON.stringify(result.Items)
+      body: ""
     };
     
   } catch (e) {
     // Return FAIL
-    logger.error("Unable to create Car", { e });
+    logger.error("Unable to delete Car", { e });
     return {
       statusCode: 500,
       headers: {
         'Access-Control-Allow-Credentials': true,
         "Access-Control-Allow-Origin": "*"
       },
-      body: e.message
+      body: ""
     };
   }
 };

@@ -46,10 +46,22 @@ functions:
       - Effect: Allow
         Action: dynamodb:Scan
         Resource: ${self:provider.environment.CAR_TABLE_ARN}
+
       # - Effect: Allow
       #   Action: dynamodb:Query
       #   Resource: ${self:provider.environment.CAR_TABLE_INDEXES_ARN}
 
+  DeleteCar:
+    handler: src/lambda/http/deleteCar.handler
+    events:
+      - http:
+          method: delete
+          path: cars/loaned/{carId}
+          cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action: dynamodb:DeleteItem
+        Resource: ${self:provider.environment.CAR_TABLE_ARN}
   # GetCars:
   #   handler: src/lambda/http/getCars.handler
   #   events:

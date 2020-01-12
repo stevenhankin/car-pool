@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent, useEffect } from 'react';
 // import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Col, Input, Label, Row, Button, Table } from 'reactstrap';
-import { createCar, getUserCars } from '../api/car-pool-api';
+import { createCar, getUserCars, deleteCar } from '../api/car-pool-api';
 import { Spinner } from 'reactstrap';
 // import { LogIn } from './LogIn';
 import log from '../utils/Log';
@@ -48,7 +48,7 @@ const Loan: React.FC<Props> = ({ jwt }) => {
     if (jwt) {
       getCarsForUser(jwt);
     }
-  }, []);
+  }, [jwt]);
 
   /**
    * User has selected a picture to upload
@@ -89,8 +89,20 @@ const Loan: React.FC<Props> = ({ jwt }) => {
     }
   };
 
-  const handleDelete = (carId: string): void => {
+  /**
+   * Delete a car (so it is no longer loaned)
+   * @param carId
+   */
+  const handleDelete = async (carId: string): Promise<void> => {
     log.info(carId);
+    if (jwt) {
+      try {
+        const response = await deleteCar(jwt, carId);
+        log.info(JSON.stringify(response));
+      } catch (e) {
+        log.error('failed');
+      }
+    }
   };
 
   useEffect(() => {
@@ -196,7 +208,7 @@ const Loan: React.FC<Props> = ({ jwt }) => {
                   <td>
                     <FontAwesomeIcon
                       icon={faTrash}
-                      onClick={(): void => handleDelete(car.carId)}
+                      onClick={(): Promise<void> => handleDelete(car.carId)}
                     />
                   </td>
                 </tr>
