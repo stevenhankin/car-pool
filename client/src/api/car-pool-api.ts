@@ -6,7 +6,7 @@ import { UploadUrl } from "../types/UploadUrl";
 
 /**
  * Call API to create a Car
- * @param idToken
+ * @param jwt
  * @param newCar
  */
 export async function createCar(
@@ -19,27 +19,19 @@ export async function createCar(
       Authorization: `Bearer ${jwt}`
     }
   });
-  // console.log('received car',response.data.item)
-  // return response.data.item
 }
 
 /**
  * Call API to get cars loaned by a user
- * @param idToken
- * @param newCar
+ * @param jwt
  */
-export async function getUserCars(
-  jwt: string
-  // newCar: CreateCarRequest
-): Promise<AxiosResponse<Car[]>> {
+export async function getUserCars(jwt: string): Promise<AxiosResponse<Car[]>> {
   return await Axios.get(`${apiEndpoint}/cars/loaned`, {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${jwt}`
     }
   });
-  // console.log('received car',response.data.item)
-  // return response.data.item
 }
 
 /**
@@ -50,7 +42,6 @@ export async function getUserCars(
 export async function getPhotoUploadUrl(
   jwt: string,
   carId: string
-  // newCar: CreateCarRequest
 ): Promise<AxiosResponse<UploadUrl>> {
   return await Axios.get(`${apiEndpoint}/cars/loaned/${carId}/uploadUrl`, {
     headers: {
@@ -58,26 +49,18 @@ export async function getPhotoUploadUrl(
       Authorization: `Bearer ${jwt}`
     }
   });
-} //: JSON.stringify({ uploadUrl: signedUrl })
+}
 
 /**
- *
- * @param jwt Use a signed url to update a photo for a car
- * @param carId
+ * Use a signed url to update a photo for a car
+ * @param uploadUrl
+ * @param file
  */
 export async function putPhoto(
   uploadUrl: string,
   file: File
 ): Promise<AxiosResponse> {
-  return await Axios.put(
-    uploadUrl,
-    file
-    // , {
-    // headers: {
-    //   "Content-Type": "application/json",
-    //   Authorization: `Bearer ${jwt}`
-    // }}
-  );
+  return await Axios.put(uploadUrl, file);
 }
 
 /**
@@ -88,7 +71,6 @@ export async function putPhoto(
 export async function deleteCar(
   jwt: string,
   carId: string
-  // newCar: CreateCarRequest
 ): Promise<AxiosResponse<Car[]>> {
   return await Axios.delete(`${apiEndpoint}/cars/loaned/${carId}`, {
     headers: {
@@ -97,26 +79,3 @@ export async function deleteCar(
     }
   });
 }
-
-/**
- * Obtain a signed url to provide direct access upload to S3 Bucket
- * @param jwt
- * @param carId
- */
-// export async function getUploadUrl(
-//   jwt: string,
-//   carId: string
-// ): Promise<string> {
-//   const response = await Axios.post(
-//     `${apiEndpoint}/cars/${carId}/picture`,
-//     '',
-//     {
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: `Bearer ${jwt}`
-//       }
-//     }
-//   );
-//   console.log('response from get upload url svc', { response });
-//   return Promise.resolve(response.data.uploadUrl);
-// }

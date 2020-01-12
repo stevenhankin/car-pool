@@ -31,7 +31,7 @@ provider:
     CAR_PICTURE_S3_BUCKET: car-pool-picture-upload-bucket-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
     # CAR_MAKE_INDEX_NAME: car-make-index
-    # CAR_OWNER_INDEX_NAME: car-owner-index
+    CAR_OWNER_INDEX_NAME: car-owner-index
     BOOKING_DATE_INDEX_NAME: booking-date-index
 
 functions:
@@ -64,12 +64,11 @@ functions:
           cors: true
     iamRoleStatements:
       - Effect: Allow
-        Action: dynamodb:Scan
+        Action: dynamodb:Query
         Resource: ${self:provider.environment.CAR_TABLE_ARN}
-
-      # - Effect: Allow
-      #   Action: dynamodb:Query
-      #   Resource: ${self:provider.environment.CAR_TABLE_INDEXES_ARN}
+      - Effect: Allow
+        Action: dynamodb:Query
+        Resource: ${self:provider.environment.CAR_TABLE_INDEXES_ARN}
 
   CreateCar:
     handler: src/lambda/http/createCar.handler
@@ -81,9 +80,7 @@ functions:
     iamRoleStatements:
       - Effect: Allow
         Action: dynamodb:PutItem
-        Resource:
-          ${self:provider.environment.CAR_TABLE_ARN}
-          # "arn:aws:dynamodb:eu-west-2:550231250245:table/Car-dev"
+        Resource: ${self:provider.environment.CAR_TABLE_ARN}
 
 resources:
   Resources:
@@ -93,34 +90,24 @@ resources:
         AttributeDefinitions:
           - AttributeName: carId
             AttributeType: S
-          # - AttributeName: make
-          #   AttributeType: S
-          # - AttributeName: ownerId
-          #   AttributeType: S
+          - AttributeName: ownerId
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
         KeySchema:
           - AttributeName: carId
             KeyType: HASH
-          # - AttributeName: ownerId
-          #   KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.CAR_TABLE}
-        # GlobalSecondaryIndexes:
-        #   - IndexName: ${self:provider.environment.CAR_MAKE_INDEX_NAME}
-        #     KeySchema:
-        #       - AttributeName: carId
-        #         KeyType: HASH
-        #       - AttributeName: make
-        #         KeyType: RANGE
-        #     Projection:
-        #       ProjectionType: ALL # What attributes will be copied to an index
-        #   - IndexName: ${self:provider.environment.CAR_OWNER_INDEX_NAME}
-        #     KeySchema:
-        #       - AttributeName: carId
-        #         KeyType: HASH
-        #       - AttributeName: ownerId
-        #         KeyType: RANGE
-        #     Projection:
-        #       ProjectionType: ALL
+        GlobalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.CAR_OWNER_INDEX_NAME}
+            KeySchema:
+              - AttributeName: ownerId
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL # What attributes will be copied to an index
 
     BookingDynamoDBTable:
       Type: AWS::DynamoDB::Table

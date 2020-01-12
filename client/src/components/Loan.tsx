@@ -1,8 +1,12 @@
-import { faPencilAlt, faTrash, faUserInjured } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPencilAlt,
+  faTrash,
+  faUserInjured
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PropTypes from "prop-types";
 import React, { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
-import {v4 as uuid} from 'uuid';
+import { v4 as uuid } from "uuid";
 // import { RouteComponentProps, withRouter } from 'react-router-dom';
 import {
   Button,
@@ -69,7 +73,7 @@ const Loan: React.FC<Props> = ({ jwt }) => {
     log.info("Calling API to get loaned cars for user");
     try {
       const response = await getUserCars(jwt);
-      const cars = response.data.map(car => ({...car, nonce: uuid()}))
+      const cars = response.data.map(car => ({ ...car, nonce: uuid() }));
       setLoanedCars(cars);
       log.info(`${JSON.stringify(response)}`);
     } catch (e) {
@@ -195,7 +199,7 @@ const Loan: React.FC<Props> = ({ jwt }) => {
         setModal(false);
         const cars = [...loanedCars];
         cars.filter(car => car.carId == editCarId)[0].nonce = uuid();
-        setLoanedCars(cars)
+        setLoanedCars(cars);
         getCarsForUser(jwt);
       }
     }
@@ -211,7 +215,11 @@ const Loan: React.FC<Props> = ({ jwt }) => {
     }
   }, [carMake, carModel, LoanAction.Idle, LoanAction.Disabled, loanStatus]);
 
-  return (
+  return !jwt ? (
+    <Row>
+      <Col>Please login (see login button at top-right)</Col>
+    </Row>
+  ) : (
     <Row>
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>Upload Photo</ModalHeader>
@@ -240,7 +248,7 @@ const Loan: React.FC<Props> = ({ jwt }) => {
         </ModalFooter>
       </Modal>
 
-      <Col sm={2}></Col>
+      {/* <Col sm={2}></Col> */}
 
       <Col>
         <Row>
@@ -309,7 +317,7 @@ const Loan: React.FC<Props> = ({ jwt }) => {
             </Row>
 
             <Row>
-              <Table>
+              <Table striped>
                 <thead>
                   <tr>
                     <th>#</th>
@@ -331,7 +339,11 @@ const Loan: React.FC<Props> = ({ jwt }) => {
                         {new Date(car.createdAt).toLocaleTimeString()}
                       </td>
                       <td>
-                        <img src={`${car.pictureUrl}?nonce=${car.nonce}`} width={150} alt="" />
+                        <img
+                          src={`${car.pictureUrl}?nonce=${car.nonce}`}
+                          height={150}
+                          alt=""
+                        />
                         <FontAwesomeIcon
                           icon={faPencilAlt}
                           size="lg"
@@ -358,7 +370,7 @@ const Loan: React.FC<Props> = ({ jwt }) => {
         )}
       </Col>
 
-      <Col sm={2}></Col>
+      {/* <Col sm={2}></Col> */}
     </Row>
   );
 };
