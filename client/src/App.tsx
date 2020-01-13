@@ -1,21 +1,20 @@
-import Amplify from 'aws-amplify';
-import React, { useState } from 'react';
-import { Route, Switch } from 'react-router-dom';
-import { Col, Container, Jumbotron, Row } from 'reactstrap';
+import Amplify from "aws-amplify";
+import React, { useState } from "react";
+import { Route, Switch } from "react-router-dom";
+import { Col, Container, Jumbotron, Row } from "reactstrap";
 // import logo from './logo.svg';
-import './App.css';
+import "./App.css";
 /**
  * Authenticate React with Amazon Web Services using Auth0
  * See https://auth0.com/authenticate/react/amazon/
  */
-import Auth from './auth/Auth';
-import awsconfig from './aws-exports';
-import Hire from './components/Hire';
-import Loan from './components/Loan';
-import RentOrHire from './components/LoanOrHire';
-// import logo from './assets/logo.png';
-import NavBar from './components/NavBar';
-import { useAuth0 } from './react-auth0-spa';
+import Auth from "./auth/Auth";
+import awsconfig from "./aws-exports";
+// import Hire from "./components/Hire";
+import Loan from "./components/Loan";
+import RentOrHire from "./components/LoanOrHire";
+import NavBar from "./components/NavBar";
+import { useAuth0 } from "./react-auth0-spa";
 
 Amplify.configure(awsconfig);
 
@@ -26,20 +25,13 @@ type Props = {
 
 const App: React.FC<Props> = ({ history, auth }) => {
   const [jwt, setJwt] = useState<string | undefined>(undefined);
-
   const { loading, user, token, getIdTokenClaims } = useAuth0();
-
-  console.log('!!!! token', token);
-
-  // if (loading) {
-  //   return <div>Loading...</div>;
-  // }
 
   /**
    * Get a JWT from Auth0 SDK
    */
   if (!loading) {
-    const claims = getIdTokenClaims().then((claims: IdToken) => {
+    getIdTokenClaims().then((claims: IdToken) => {
       if (claims && claims.__raw) {
         setJwt(claims.__raw);
       }
@@ -68,9 +60,9 @@ const App: React.FC<Props> = ({ history, auth }) => {
         </Row>
 
         <Switch>
-          <Route path="/" exact render={() => <RentOrHire />} />
-          <Route path="/hire" render={() => <Hire />} />
-          <Route path="/loan" render={() => <Loan jwt={jwt} />} />
+          <Route path="/" exact render={(): JSX.Element => <RentOrHire />} />
+          {/* <Route path="/hire" render={(): JSX.Element => <Hire />} /> */}
+          <Route path="/loan" render={(): JSX.Element => <Loan jwt={jwt} />} />
         </Switch>
       </Container>
     </>
