@@ -14,7 +14,7 @@ interface Props {
 const LoanCar: React.FC<Props> = ({ jwt, loanedCars, setLoanedCars }) => {
   // State of the Loan button:  Disabled <-> Idle -> Loaning -> Success|Failed
   enum LoanAction {
-    Disabled = "Enter fields above",
+    Disabled = "Enter all fields",
     Idle = "Loan it!",
     Loaning = "Loaning... ",
     Failed = "Failed 🆇",
@@ -86,10 +86,10 @@ const LoanCar: React.FC<Props> = ({ jwt, loanedCars, setLoanedCars }) => {
       </Row>
 
       <Row>
-        <Col>
+        <Col sm={1}>
           <Label for="make">Make</Label>
         </Col>
-        <Col sm={10}>
+        <Col>
           <Input
             type="text"
             id="make"
@@ -98,13 +98,10 @@ const LoanCar: React.FC<Props> = ({ jwt, loanedCars, setLoanedCars }) => {
             onChange={(e): void => setCarMake(e.target.value)}
           />
         </Col>
-      </Row>
-
-      <Row>
-        <Col>
+        <Col sm={1}>
           <Label for="model">Model</Label>
         </Col>
-        <Col sm={10}>
+        <Col>
           <Input
             type="text"
             id="model"
@@ -113,13 +110,9 @@ const LoanCar: React.FC<Props> = ({ jwt, loanedCars, setLoanedCars }) => {
             onChange={(e): void => setCarModel(e.target.value)}
           />
         </Col>
-      </Row>
-
-      <Row>
         <Col>
           <Button
             color={"primary"}
-            size={"lg"}
             onClick={loanCar}
             disabled={!carMake || !carModel}
           >

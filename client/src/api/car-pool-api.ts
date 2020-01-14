@@ -22,6 +22,31 @@ export async function createCar(
 }
 
 /**
+ * Call API to update a Car
+ * @param jwt
+ * @param carId
+ * @param make
+ * @param model
+ */
+export async function updateCar(
+  jwt: string,
+  carId: string,
+  make: string,
+  model: string
+): Promise<AxiosResponse<Car>> {
+  return await Axios.put(
+    `${apiEndpoint}/cars/${carId}`,
+    JSON.stringify({ make, model }),
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${jwt}`
+      }
+    }
+  );
+}
+
+/**
  * Call API to get cars loaned by a user
  * @param jwt
  */
@@ -50,6 +75,22 @@ export async function getPhotoUploadUrl(
     }
   });
 }
+
+/**
+ * Useful for checking if an image exists
+ * without actually performing the get
+ */
+export const checkIfExists = async (
+  jwt: string,
+  url: string
+): Promise<boolean> => {
+  try {
+    await Axios.head(url);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
 
 /**
  * Use a signed url to update a photo for a car
