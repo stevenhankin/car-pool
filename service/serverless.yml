@@ -5,11 +5,23 @@ custom:
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: true
+  documentation:
+    api:
+      info:
+        version: v1.0.0
+        title: Car Pool API
+        description: Serverless application for loaning and hiring cars
+    models:
+      - name: CarRequest
+        contentType: application/json
+        schema: ${file{models/create-car-request.json}}
 
 # Add the serverless-webpack plugin
 plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
+  - serverless-reqvalidator-plugin
+  - serverless-aws-documentation
 
 provider:
   name: aws
@@ -20,6 +32,8 @@ provider:
 
   apiGateway:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
+    restApiId:
+      Ref: ApiGatewayRestApi
 
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
@@ -77,6 +91,13 @@ functions:
           method: post
           path: cars
           cors: true
+          reqValidatorName: 'RequestBodyValidator'
+          documentation:
+            summary: Create car
+            description: Create a new car loan
+            requestModels:
+              'application/json': CarRequest
+
     iamRoleStatements:
       - Effect: Allow
         Action: dynamodb:PutItem
@@ -96,6 +117,16 @@ functions:
 
 resources:
   Resources:
+
+    RequestBodyValidator:
+      Type: AWS::ApiGateway::RequestValidator
+      Properties:
+        RestApiId: 
+          Ref: ApiGatewayRestApi
+        ValidateRequestBody: true
+        ValidateRequestParameters: false
+        
+
     CarDynamoDBTable:
       Type: AWS::DynamoDB::Table
       Properties:

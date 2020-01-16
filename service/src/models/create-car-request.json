@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title": "car",
+    "type": "object",
+    "properties": {
+        "carId": {
+            "type": "string"
+        },
+        "ownerId": {
+            "type": "string"
+        },
+        "createdAt": {
+            "type": "string"
+        },
+        "make": {
+            "type": "string"
+        },
+        "model": {
+            "type": "string"
+        },
+        "pictureUrl": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "make",
+        "model"
+    ],
+    "additionalProperties": false
+}
