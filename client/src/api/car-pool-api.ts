@@ -35,7 +35,7 @@ export async function updateCar(
   model: string
 ): Promise<AxiosResponse<Car>> {
   return await Axios.put(
-    `${apiEndpoint}/cars/${carId}`,
+    `${apiEndpoint}/cars/loaned/${carId}`,
     JSON.stringify({ make, model }),
     {
       headers: {

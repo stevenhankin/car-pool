@@ -26,12 +26,12 @@ provider:
     CAR_TABLE: Car-${self:provider.stage}
     CAR_TABLE_ARN: "arn:aws:dynamodb:eu-west-2:*:table/${self:provider.environment.CAR_TABLE}"
     CAR_TABLE_INDEXES_ARN: "arn:aws:dynamodb:eu-west-2:*:table/${self:provider.environment.CAR_TABLE}/index/*"
-    BOOKING_TABLE: Booking-${self:provider.stage}
-    BOOKING_TABLE_ARN: "arn:aws:dynamodb:eu-west-2:*:table/${self:provider.environment.BOOKING_TABLE}"
     CAR_PICTURE_S3_BUCKET: car-pool-picture-upload-bucket-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
-    # CAR_MAKE_INDEX_NAME: car-make-index
     CAR_OWNER_INDEX_NAME: car-owner-index
+    # The following items are placeholder for future development
+    BOOKING_TABLE: Booking-${self:provider.stage}
+    BOOKING_TABLE_ARN: "arn:aws:dynamodb:eu-west-2:*:table/${self:provider.environment.BOOKING_TABLE}"
     BOOKING_DATE_INDEX_NAME: booking-date-index
 
 functions:
@@ -82,6 +82,18 @@ functions:
         Action: dynamodb:PutItem
         Resource: ${self:provider.environment.CAR_TABLE_ARN}
 
+  UpdateCar:
+    handler: src/lambda/http/updateCar.handler
+    events:
+      - http:
+          method: put
+          path: cars/loaned/{carId}
+          cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action: dynamodb:UpdateItem
+        Resource: ${self:provider.environment.CAR_TABLE_ARN}
+
 resources:
   Resources:
     CarDynamoDBTable:
@@ -97,6 +109,8 @@ resources:
         KeySchema:
           - AttributeName: carId
             KeyType: HASH
+          - AttributeName: ownerId
+            KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.CAR_TABLE}
         GlobalSecondaryIndexes:

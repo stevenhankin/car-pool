@@ -1,19 +1,14 @@
 import { faPencilAlt, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PropTypes from "prop-types";
-import React, { useEffect, useState, SyntheticEvent } from "react";
+import React, { SyntheticEvent, useEffect, useState } from "react";
 import { Col, Row, Table } from "reactstrap";
 import uuid from "uuid";
-import {
-  deleteCar,
-  getPhotoUploadUrl,
-  getUserCars,
-  checkIfExists
-} from "../api/car-pool-api";
+import { checkIfExists, deleteCar, getPhotoUploadUrl, getUserCars } from "../api/car-pool-api";
 import { Car } from "../types/Car";
 import log from "../utils/Log";
-import UploadCarImage from "./UploadCarImage";
 import EditCarDetails from "./EditCarDetails";
+import UploadCarImage from "./UploadCarImage";
 
 export interface Props {
   jwt: string | undefined;
@@ -95,6 +90,7 @@ const ListLoanedCars: React.FC<Props> = ({
     e: SyntheticEvent,
     carId: string
   ): Promise<void> => {
+    e.stopPropagation();
     log.info(carId);
     if (jwt) {
       try {
