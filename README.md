@@ -59,6 +59,7 @@ Please make sure to update tests as appropriate
    - __client__
      - [README.md](client/README.md)
      - [node\_modules](client/node_modules)
+     - [package\-lock.json](client/package-lock.json)
      - [package.json](client/package.json)
      - __public__
        - [favicon.ico](client/public/favicon.ico)
@@ -69,12 +70,67 @@ Please make sure to update tests as appropriate
        - [robots.txt](client/public/robots.txt)
      - __src__
        - [App.css](client/src/App.css)
-       - [App.js](client/src/App.js)
-       - [App.test.js](client/src/App.test.js)
+       - [App.test.tsx](client/src/App.test.tsx)
+       - [App.tsx](client/src/App.tsx)
+       - __api__
+         - [car\-pool\-api.ts](client/src/api/car-pool-api.ts)
+       - __assets__
+         - [Screenshot 2020\-01\-04 at 22.39.48.png](client/src/assets/Screenshot%202020-01-04%20at%2022.39.48.png)
+         - [jonathan\-borba\-zSTUJTO4Xe8\-unsplash.jpg](client/src/assets/jonathan-borba-zSTUJTO4Xe8-unsplash.jpg)
+         - [logo.png](client/src/assets/logo.png)
+         - [reinhart\-julian\-VsXHzSdwuik\-unsplash.jpg](client/src/assets/reinhart-julian-VsXHzSdwuik-unsplash.jpg)
+       - __auth__
+         - [Auth.js](client/src/auth/Auth.js)
+       - [auth\_config.json](client/src/auth_config.json)
+       - [aws\-exports.js](client/src/aws-exports.js)
+       - __components__
+         - [EditCarDetails.tsx](client/src/components/EditCarDetails.tsx)
+         - [Hire.tsx](client/src/components/Hire.tsx)
+         - [ListLoanedCars.tsx](client/src/components/ListLoanedCars.tsx)
+         - [Loan.tsx](client/src/components/Loan.tsx)
+         - [LoanCar.tsx](client/src/components/LoanCar.tsx)
+         - [LoanOrHire.tsx](client/src/components/LoanOrHire.tsx)
+         - [LogIn.tsx](client/src/components/LogIn.tsx)
+         - [NavBar.tsx](client/src/components/NavBar.tsx)
+         - [UploadCarImage.tsx](client/src/components/UploadCarImage.tsx)
+       - [config.ts](client/src/config.ts)
        - [index.css](client/src/index.css)
-       - [index.js](client/src/index.js)
+       - [index.tsx](client/src/index.tsx)
        - [logo.svg](client/src/logo.svg)
-       - [serviceWorker.js](client/src/serviceWorker.js)
-       - [setupTests.js](client/src/setupTests.js)
-     - [yarn.lock](client/yarn.lock)
-   - __serverless__
+       - [react\-app\-env.d.ts](client/src/react-app-env.d.ts)
+       - [react\-auth0\-spa.js](client/src/react-auth0-spa.js)
+       - [serviceWorker.ts](client/src/serviceWorker.ts)
+       - [setupTests.ts](client/src/setupTests.ts)
+       - __types__
+         - [Car.ts](client/src/types/Car.ts)
+         - [CarWithUploadUrl.ts](client/src/types/CarWithUploadUrl.ts)
+         - [CreateCarRequest.ts](client/src/types/CreateCarRequest.ts)
+         - [UploadUrl.ts](client/src/types/UploadUrl.ts)
+       - __utils__
+         - [Log.ts](client/src/utils/Log.ts)
+         - [history.ts](client/src/utils/history.ts)
+     - [tsconfig.json](client/tsconfig.json)
+   - __service__
+     - [node\_modules](service/node_modules)
+     - [package\-lock.json](service/package-lock.json)
+     - [package.json](service/package.json)
+     - [serverless.yml](service/serverless.yml)
+     - __src__
+       - __auth__
+         - [JwtPayload.ts](service/src/auth/JwtPayload.ts)
+         - [utils.ts](service/src/auth/utils.ts)
+       - __lambda__
+         - __http__
+           - [createCar.ts](service/src/lambda/http/createCar.ts)
+           - [deleteCar.ts](service/src/lambda/http/deleteCar.ts)
+           - [getPhotoUploadUrl.ts](service/src/lambda/http/getPhotoUploadUrl.ts)
+           - [getUserCars.ts](service/src/lambda/http/getUserCars.ts)
+           - [updateCar.ts](service/src/lambda/http/updateCar.ts)
+       - __models__
+         - [Car.ts](service/src/models/Car.ts)
+       - __utils__
+         - [logger.ts](service/src/utils/logger.ts)
+     - [tsconfig.json](service/tsconfig.json)
+     - __vscode__
+       - [launch.json](service/vscode/launch.json)
+     - [webpack.config.js](service/webpack.config.js)
