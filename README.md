@@ -2,6 +2,8 @@
 
 This application is my capstone project for the [Udacity Cloud Developer Nanodegree](https://www.udacity.com/course/cloud-developer-nanodegree--nd9990)
 
+As a user, you can login and register your car for loaning purposes to the eMarket-Place.
+
 It demonstrates
 * AWS 
   * Lambdas (serverless functions)
@@ -58,32 +60,19 @@ Please make sure to update tests as appropriate
    - [README.md](README.md)
    - __client__
      - [README.md](client/README.md)
-     - [node\_modules](client/node_modules)
      - [package\-lock.json](client/package-lock.json)
      - [package.json](client/package.json)
-     - __public__
-       - [favicon.ico](client/public/favicon.ico)
-       - [index.html](client/public/index.html)
-       - [logo192.png](client/public/logo192.png)
-       - [logo512.png](client/public/logo512.png)
-       - [manifest.json](client/public/manifest.json)
-       - [robots.txt](client/public/robots.txt)
+     - __public__ (standard React App files)
      - __src__
        - [App.css](client/src/App.css)
        - [App.test.tsx](client/src/App.test.tsx)
        - [App.tsx](client/src/App.tsx)
-       - __api__
+       - __api__ (REST API to Service)
          - [car\-pool\-api.ts](client/src/api/car-pool-api.ts)
-       - __assets__
-         - [Screenshot 2020\-01\-04 at 22.39.48.png](client/src/assets/Screenshot%202020-01-04%20at%2022.39.48.png)
-         - [jonathan\-borba\-zSTUJTO4Xe8\-unsplash.jpg](client/src/assets/jonathan-borba-zSTUJTO4Xe8-unsplash.jpg)
-         - [logo.png](client/src/assets/logo.png)
-         - [reinhart\-julian\-VsXHzSdwuik\-unsplash.jpg](client/src/assets/reinhart-julian-VsXHzSdwuik-unsplash.jpg)
-       - __auth__
+       - __auth__ (Auth0 3rd party authentication)
          - [Auth.js](client/src/auth/Auth.js)
-       - [auth\_config.json](client/src/auth_config.json)
-       - [aws\-exports.js](client/src/aws-exports.js)
-       - __components__
+       - [auth\_config.json](client/src/auth_config.json) (Auth0 config file)
+       - __components__ (React Components)
          - [EditCarDetails.tsx](client/src/components/EditCarDetails.tsx)
          - [Hire.tsx](client/src/components/Hire.tsx)
          - [ListLoanedCars.tsx](client/src/components/ListLoanedCars.tsx)
@@ -96,12 +85,11 @@ Please make sure to update tests as appropriate
        - [config.ts](client/src/config.ts)
        - [index.css](client/src/index.css)
        - [index.tsx](client/src/index.tsx)
-       - [logo.svg](client/src/logo.svg)
        - [react\-app\-env.d.ts](client/src/react-app-env.d.ts)
        - [react\-auth0\-spa.js](client/src/react-auth0-spa.js)
        - [serviceWorker.ts](client/src/serviceWorker.ts)
        - [setupTests.ts](client/src/setupTests.ts)
-       - __types__
+       - __types__ (Typescript Interfaces)
          - [Car.ts](client/src/types/Car.ts)
          - [CarWithUploadUrl.ts](client/src/types/CarWithUploadUrl.ts)
          - [CreateCarRequest.ts](client/src/types/CreateCarRequest.ts)
@@ -111,26 +99,23 @@ Please make sure to update tests as appropriate
          - [history.ts](client/src/utils/history.ts)
      - [tsconfig.json](client/tsconfig.json)
    - __service__
-     - [node\_modules](service/node_modules)
      - [package\-lock.json](service/package-lock.json)
      - [package.json](service/package.json)
-     - [serverless.yml](service/serverless.yml)
+     - [serverless.yml](service/serverless.yml) (Serverless framework config file)
      - __src__
        - __auth__
          - [JwtPayload.ts](service/src/auth/JwtPayload.ts)
          - [utils.ts](service/src/auth/utils.ts)
-       - __lambda__
+       - __lambda__ (Serverless lambdas)
          - __http__
            - [createCar.ts](service/src/lambda/http/createCar.ts)
            - [deleteCar.ts](service/src/lambda/http/deleteCar.ts)
            - [getPhotoUploadUrl.ts](service/src/lambda/http/getPhotoUploadUrl.ts)
            - [getUserCars.ts](service/src/lambda/http/getUserCars.ts)
            - [updateCar.ts](service/src/lambda/http/updateCar.ts)
-       - __models__
+       - __models__ (Typescript interfaces)
          - [Car.ts](service/src/models/Car.ts)
        - __utils__
          - [logger.ts](service/src/utils/logger.ts)
      - [tsconfig.json](service/tsconfig.json)
-     - __vscode__
-       - [launch.json](service/vscode/launch.json)
      - [webpack.config.js](service/webpack.config.js)
