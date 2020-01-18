@@ -56,8 +56,14 @@ Please make sure to update tests as appropriate
 [MIT](https://choosealicense.com/licenses/mit/)
 
 ## Screenshots
+**Screenshot showing the Amplify Console**
 ![Image of Client Amplify Deployment](https://github.com/stevenhankin/car-pool/blob/master/screenshots/client-amplify-CD.png)
+The client React App has been deployed to the cloud (static build inside an S3 bucket)
+
+**Screenshot showing the result of a Serverless deployment (sls deploy -v)**
 ![Image of Serverless Deployment](https://github.com/stevenhankin/car-pool/blob/master/screenshots/serverless-deployment.png)
+
+**Screenshot of the CloudFormation Stack for Serverless deployment**
 ![Image of CloudFormation Summary](https://github.com/stevenhankin/car-pool/blob/master/screenshots/CloudFormationStack-serverless.png)
 
 
