@@ -11,8 +11,11 @@ It demonstrates
   * S3 Bucket (storage of images)
   * Cognito (authentication of users)
 * [Serverless Framework](https://serverless.com/)
-* [AWS Amplify Client Framework](https://aws-amplify.github.io/docs/js/react)
-* WebApp Client (React) integration
+* WebApp Client
+  * ReactJS
+  * [AWS Amplify Client Framework](https://aws-amplify.github.io/docs/js/react)
+* [Auth0](https://auth0.com/)
+  * 3rd party OAuth integration
 
 Additionally, this application uses ReactJS, which I learnt a few years ago on [Udacity React Nanodegree](https://www.udacity.com/course/react-nanodegree--nd019) 
 
@@ -22,11 +25,10 @@ Additionally, this application uses ReactJS, which I learnt a few years ago on [
 * [AWS Account](https://portal.aws.amazon.com/gp/aws/developer/registration/index.html)
 * [AWS CLI](https://aws.amazon.com/cli/)
 * [Serverless](https://serverless.com/framework/docs/getting-started/)
+* [Auth0](https://auth0.com/)
 
 ## Installation
-
 Use the node package manager to install car-pool
-
 ```bash
 cd service
 npm install
