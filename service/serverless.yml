@@ -3,6 +3,9 @@ app: car-pool
 service:
   name: car-pool-service
 
+package:
+  individually: true
+  
 custom:
   webpack:
     webpackConfig: ./webpack.config.js
