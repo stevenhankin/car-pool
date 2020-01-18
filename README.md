@@ -69,8 +69,7 @@ The client React App has been deployed to the cloud (static build inside an S3 b
 
 ## Files
 - __car\-pool__
-   - [README.md](README.md)
-   - __client__
+   - __client__ (Web App)
      - __public__ (standard React App files)
      - __src__
        - __api__ (REST API to Service)
@@ -78,7 +77,7 @@ The client React App has been deployed to the cloud (static build inside an S3 b
        - __components__ (React Components)
        - __types__ (Typescript Interfaces)
        - __utils__
-   - __service__
+   - __service__ (Serverless Stack)
      - [serverless.yml](service/serverless.yml) (Serverless framework config file)
      - __src__
        - __auth__ (JWT handling)
