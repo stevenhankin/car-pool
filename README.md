@@ -1,10 +1,14 @@
 # Car Pool App
 
+## Video of the application running in the Cloud
+
 [![Video of application running in Cloud](http://i3.ytimg.com/vi/P0gJrt-dZO8/hqdefault.jpg)](https://youtu.be/P0gJrt-dZO8)
+
+## Summary
 
 This application is my capstone project for the [Udacity Cloud Developer Nanodegree](https://www.udacity.com/course/cloud-developer-nanodegree--nd9990)
 
-As a user, you can login and register your car for loaning purposes to the eMarket-Place.
+As a user, you can login and register your car for loaning purposes on a P2P marketplace
 
 It demonstrates
 * AWS 
@@ -18,6 +22,9 @@ It demonstrates
   * [AWS Amplify Client Framework](https://aws-amplify.github.io/docs/js/react)
 * [Auth0](https://auth0.com/)
   * 3rd party OAuth integration
+* Optimisations
+  * Global Secondary Indexes on DynamoDB
+  * Individual packaging of Lambdas
 
 Additionally, this application uses ReactJS, which I learnt a few years ago on [Udacity React Nanodegree](https://www.udacity.com/course/react-nanodegree--nd019) 
 
