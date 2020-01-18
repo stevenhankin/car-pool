@@ -88,7 +88,7 @@ export default class Auth {
     localStorage.removeItem('isLoggedIn');
 
     this.auth0.logout({
-      return_to: window.location.origin
+      return_to: '/'
     });
 
     // navigate to the home route
