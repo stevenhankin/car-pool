@@ -143,7 +143,7 @@ const ListLoanedCars: React.FC<Props> = ({
       checkIfExists(jwt, imageUrl);
       return (
         <tr key={car.carId} onClick={(e): void => handleEditCar(e, car)}>
-          <td>{idx}</td>
+          <td>{idx + 1}</td>
           <td>{car.make}</td>
           <td>{car.model}</td>
           <td>
