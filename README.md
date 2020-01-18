@@ -1,5 +1,7 @@
 # Car Pool App
 
+[![Video of application running in Cloud](http://i3.ytimg.com/vi/P0gJrt-dZO8/hqdefault.jpg)](https://youtu.be/P0gJrt-dZO8)
+
 This application is my capstone project for the [Udacity Cloud Developer Nanodegree](https://www.udacity.com/course/cloud-developer-nanodegree--nd9990)
 
 As a user, you can login and register your car for loaning purposes to the eMarket-Place.
