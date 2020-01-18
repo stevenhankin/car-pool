@@ -9,6 +9,7 @@ import "source-map-support/register";
 import { createLogger } from "../../utils/logger";
 const logger = createLogger("http");
 const headers = {
+  "Access-Control-Allow-Credentials": true,
   "Access-Control-Allow-Origin": "*"
 };
 const BUCKET_NAME = process.env.CAR_PICTURE_S3_BUCKET;
