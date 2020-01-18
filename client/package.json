@@ -21,6 +21,8 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.3.0",
     "reactstrap": "^8.2.0",
+    "serverless-aws-documentation": "^1.1.0",
+    "serverless-reqvalidator-plugin": "^1.0.3",
     "typescript": "~3.7.2",
     "winston": "^3.2.1"
   },
