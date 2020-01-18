@@ -1,8 +1,9 @@
 # Car Pool App
 
-## Video of the application running in the Cloud
+##### Youtube video of the application running in the Cloud:
 
 [![Video of application running in Cloud](http://i3.ytimg.com/vi/P0gJrt-dZO8/hqdefault.jpg)](https://youtu.be/P0gJrt-dZO8)
+
 
 ## Summary
 
