@@ -28,23 +28,40 @@ Additionally, this application uses ReactJS, which I learnt a few years ago on [
 Use the node package manager to install car-pool
 
 ```bash
+cd service
+npm install
+cd ../client
 npm install
 ```
 
 ## Usage
+
+#### Serverless Deployment (Manual)
 Firstly, the serverless application should be deployed to AWS
 Here I'm assuming that you have an AWS Profile of _serverless_ and are deploying to region _eu-west-2_. The NODE_OPTIONS setting is to help avoid memory problems in Node when packaging the lambdas as separate deployables.
 ```bash
 export NODE_OPTIONS=--max_old_space_size=4096
 
-sls deploy -v --aws-profile serverless --aws-region eu-west-2
+sls deploy -v
 ```
+#### Serverless CD (configure online)
+Go to https://dashboard.serverless.com/ and setup account/login
+Your deployed app should be available for easy setup of automated CD once it has been deployed manually
 
-The client can then be installed and run locally 
+
+#### Client Local Start
+1) Update the client/src/config.ts credentials to match your Auth0 account (for authentication) and Serverless deployment (for REST API calls)
+2) The client can be installed and run locally 
 ```bash
 cd client
 
 npm start
+```
+
+#### Client Cloud Deployment
+Configure using the Amplify Console:
+```
+amplify console
 ```
 
 ## Contributing
