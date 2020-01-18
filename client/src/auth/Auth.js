@@ -9,7 +9,7 @@ export default class Auth {
   auth0 = new auth0.WebAuth({
     domain: authConfig.domain,
     clientID: authConfig.clientId,
-    redirectUri: authConfig.callbackUrl,
+    redirectUri: authConfig.callbackUrl+'?redirectTo=/',
     responseType: 'token id_token',
     scope: 'openid'
   });
