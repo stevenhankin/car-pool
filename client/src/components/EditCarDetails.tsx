@@ -58,7 +58,7 @@ const EditCarDetails: React.FC<Props> = ({
         setModal(false);
         const cars = [...loanedCars];
         const carToUpdate = cars.filter(
-          car => car.carId == currentCar.carId
+          car => car.carId === currentCar.carId
         )[0];
         carToUpdate.nonce = uuid();
         carToUpdate.make = make;

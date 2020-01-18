@@ -1,16 +1,16 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import * as serviceWorker from './serviceWorker';
-import { BrowserRouter } from 'react-router-dom';
-import { Auth0Provider } from './react-auth0-spa';
-import config from './auth_config.json';
-import history from './utils/history';
+import "bootstrap/dist/css/bootstrap.min.css";
+import React from "react";
+import ReactDOM from "react-dom";
+import { BrowserRouter } from "react-router-dom";
+import App from "./App";
+import config from "./auth_config.json";
+import { Auth0Provider } from "./react-auth0-spa";
+import * as serviceWorker from "./serviceWorker";
+import history from "./utils/history";
 
 // A function that routes the user to the right place
 // after login
-const onRedirectCallback = (appState?: {targetUrl: string}) => {
+const onRedirectCallback = (appState?: { targetUrl: string }): void => {
   history.push(
     appState && appState.targetUrl
       ? appState.targetUrl
@@ -27,10 +27,10 @@ ReactDOM.render(
       redirect_uri={window.location.origin}
       onRedirectCallback={onRedirectCallback}
     >
-      <App history={undefined} auth={undefined} />
+      <App />
     </Auth0Provider>
   </BrowserRouter>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want your app to work offline and load faster, you can change

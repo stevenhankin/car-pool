@@ -1,10 +1,15 @@
 import { faPencilAlt, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PropTypes from "prop-types";
-import React, { SyntheticEvent, useEffect, useState } from "react";
+import React, { SyntheticEvent, useEffect, useState, useCallback } from "react";
 import { Col, Row, Table } from "reactstrap";
 import uuid from "uuid";
-import { checkIfExists, deleteCar, getPhotoUploadUrl, getUserCars } from "../api/car-pool-api";
+import {
+  checkIfExists,
+  deleteCar,
+  getPhotoUploadUrl,
+  getUserCars
+} from "../api/car-pool-api";
 import { Car } from "../types/Car";
 import log from "../utils/Log";
 import EditCarDetails from "./EditCarDetails";
@@ -33,17 +38,20 @@ const ListLoanedCars: React.FC<Props> = ({
    * List of all cars for user
    * @param jwt
    */
-  const getCarsForUser = async (jwt: string): Promise<void> => {
-    log.info("Calling API to get loaned cars for user");
-    try {
-      const response = await getUserCars(jwt);
-      const cars = response.data.map(car => ({ ...car, nonce: uuid() }));
-      setLoanedCars(cars);
-      log.info(`${JSON.stringify(response)}`);
-    } catch (e) {
-      log.error(JSON.stringify(e));
-    }
-  };
+  const getCarsForUser = useCallback(
+    async (jwt: string): Promise<void> => {
+      log.info("Calling API to get loaned cars for user");
+      try {
+        const response = await getUserCars(jwt);
+        const cars = response.data.map(car => ({ ...car, nonce: uuid() }));
+        setLoanedCars(cars);
+        log.info(`${JSON.stringify(response)}`);
+      } catch (e) {
+        log.error(JSON.stringify(e));
+      }
+    },
+    [setLoanedCars]
+  );
 
   /**
    * Login will trigger getting list of cars from DynamoDB
@@ -51,8 +59,10 @@ const ListLoanedCars: React.FC<Props> = ({
   useEffect(() => {
     if (jwt) {
       getCarsForUser(jwt);
+    } else {
+      setLoanedCars([]);
     }
-  }, [jwt]);
+  }, [getCarsForUser, jwt, setLoanedCars]);
 
   /**
    * User has clicked icon to edit the photo

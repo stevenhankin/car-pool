@@ -62,7 +62,7 @@ const UploadCarImage: React.FC<Props> = ({
         // On successful upload, close modal and refresh
         setModal(false);
         const cars = [...loanedCars];
-        cars.filter(car => car.carId == currentCarId)[0].nonce = uuid();
+        cars.filter(car => car.carId === currentCarId)[0].nonce = uuid();
         setLoanedCars(cars);
         getCarsForUser(jwt);
       }
