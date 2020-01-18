@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import config from "./auth_config.json";
-import { Auth0Provider } from "./react-auth0-spa";
+import { Auth0Provider } from "./auth/react-auth0-spa";
 import * as serviceWorker from "./serviceWorker";
 import history from "./utils/history";
 

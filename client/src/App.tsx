@@ -11,7 +11,7 @@ import awsconfig from "./aws-exports";
 import Loan from "./components/Loan";
 import RentOrHire from "./components/LoanOrHire";
 import NavBar from "./components/NavBar";
-import { useAuth0 } from "./react-auth0-spa";
+import { useAuth0 } from "./auth/react-auth0-spa";
 
 Amplify.configure(awsconfig);
 
